@@ -87,6 +87,8 @@ export interface WorkflowTemplate {
   id: string;
   name: string;
   description?: string;
+  is_active: boolean;
+  category?: string;
   nodes: any[];
   edges: any[];
   trigger_config: any;
