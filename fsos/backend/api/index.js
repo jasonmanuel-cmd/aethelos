@@ -1,12 +1,11 @@
-const path = require('path');
-
 delete process.env.PORT;
 
 let handler;
+let bootstrapAttempted = false;
 
 async function bootstrap() {
   const { NestFactory } = require('@nestjs/core');
-  const { AppModule } = require(path.join(__dirname, '..', 'dist', 'src', 'app.module'));
+  const { AppModule } = require('../dist/src/app.module');
   const { ValidationPipe } = require('@nestjs/common');
   const helmet = require('helmet');
   const compression = require('compression');
@@ -23,6 +22,13 @@ async function bootstrap() {
 
 module.exports = async (req, res) => {
   if (!handler) {
+    if (bootstrapAttempted) {
+      const body = JSON.stringify({ error: 'Still initializing...' });
+      res.writeHead(503, { 'Content-Type': 'application/json' });
+      res.end(body);
+      return;
+    }
+    bootstrapAttempted = true;
     try {
       handler = await bootstrap();
     } catch (err) {
