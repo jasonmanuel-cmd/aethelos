@@ -7,6 +7,12 @@
 -- 2. Then run everything below
 
 -- ============================================================
+-- EXTENSIONS (Supabase pre-installs uuid-ossp, but ensure it)
+-- ============================================================
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+-- ============================================================
 -- TENANT API KEYS (Per-tenant service credentials)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS tenant_api_keys (
