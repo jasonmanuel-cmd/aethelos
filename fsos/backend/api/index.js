@@ -1,10 +1,12 @@
+const path = require('path');
+
 delete process.env.PORT;
 
 let handler;
 
 async function bootstrap() {
   const { NestFactory } = require('@nestjs/core');
-  const { AppModule } = require('./dist/src/app.module');
+  const { AppModule } = require(path.join(__dirname, '..', 'dist', 'src', 'app.module'));
   const { ValidationPipe } = require('@nestjs/common');
   const helmet = require('helmet');
   const compression = require('compression');

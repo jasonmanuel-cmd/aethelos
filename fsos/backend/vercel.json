@@ -1,15 +1,9 @@
 {
   "buildCommand": "npx @nestjs/cli build",
   "functions": {
-    "index.js": {
+    "api/index.js": {
       "memory": 512,
       "maxDuration": 30
     }
-  },
-  "routes": [
-    { "src": "/(.*)", "dest": "index.js" }
-  ],
-  "overrides": {
-    "dist/**": { "public": true }
   }
 }
