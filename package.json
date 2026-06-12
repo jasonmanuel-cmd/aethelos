@@ -1,0 +1,16 @@
+{
+  "name": "fsos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chaotically Organized AI - Financial Services Operating System",
+  "scripts": {
+    "dev:backend": "cd backend && npm run start:dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "db:migrate": "cd backend && npx ts-node db/migrate.ts",
+    "db:seed": "cd backend && npx ts-node db/seed.ts",
+    "lint": "cd backend && npm run lint && cd ../frontend && npm run lint",
+    "typecheck": "cd backend && npm run typecheck && cd ../frontend && npm run typecheck"
+  }
+}
