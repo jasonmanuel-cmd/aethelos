@@ -14,7 +14,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   useEffect(() => { setMounted(true); }, []);
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return (
+      <html lang="en">
+        <body className="min-h-screen bg-gray-50">{children}</body>
+      </html>
+    );
+  }
 
   const isLoginPage = pathname === '/login';
 
@@ -29,7 +35,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const token = typeof window !== 'undefined' ? localStorage.getItem('fsos_token') : null;
   if (!token && pathname !== '/login') {
     router.push('/login');
-    return null;
+    return (
+      <html lang="en">
+        <body className="min-h-screen bg-gray-50">{children}</body>
+      </html>
+    );
   }
 
   return (
