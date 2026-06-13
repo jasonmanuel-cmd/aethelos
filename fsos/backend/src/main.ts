@@ -39,6 +39,19 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'x-tenant-id', 'x-request-id'],
   });
 
+  const httpAdapter = app.getHttpAdapter();
+  httpAdapter.get('/', (req, res) => {
+    res.status(200).json({
+      message: 'FSOS API',
+      version: '1.0.0',
+      status: 'ok',
+      endpoints: {
+        login: '/api/v1/tenant/login',
+        health: '/api/v1/health',
+      },
+    });
+  });
+
   app.enableShutdownHooks();
 
   const server = await app.listen(config.port, () => {

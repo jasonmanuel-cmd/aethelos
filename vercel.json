@@ -1,0 +1,13 @@
+{
+  "buildCommand": "cd fsos/backend && npm run now-build",
+  "outputDirectory": "fsos/backend/api/dist",
+  "devCommand": "cd fsos/backend && npm run start:dev",
+  "installCommand": "cd fsos/backend && npm install",
+  "framework": "node",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.js"
+    }
+  ]
+}

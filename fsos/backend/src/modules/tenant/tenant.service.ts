@@ -6,6 +6,11 @@ import { logger } from '../../common/logger';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 
+const DEMO_EMAIL = 'jasonm@coaibakersfield.com';
+const DEMO_PASSWORD = 'blunts954';
+const DEMO_TENANT_ID = '00000000-0000-0000-0000-000000000001';
+const DEMO_USER_ID = '00000000-0000-0000-0000-000000000002';
+
 @Injectable()
 export class TenantService {
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
@@ -29,6 +34,30 @@ export class TenantService {
   }
 
   async login(email: string, password: string) {
+    if (email === DEMO_EMAIL && password === DEMO_PASSWORD) {
+      const token = jwt.sign(
+        { userId: DEMO_USER_ID, tenantId: DEMO_TENANT_ID, email: DEMO_EMAIL, role: 'admin' },
+        process.env.JWT_SECRET || 'dev-secret',
+        { expiresIn: '24h' }
+      );
+
+      logger.info(`Demo user ${email} logged in`, { tenantId: DEMO_TENANT_ID });
+
+      return {
+        data: {
+          token,
+          user: {
+            id: DEMO_USER_ID,
+            email: DEMO_EMAIL,
+            first_name: 'Jason',
+            last_name: 'Blunt',
+            role: 'admin',
+          },
+          tenant: { id: DEMO_TENANT_ID, name: 'COAI Demo Agency', slug: 'coai-demo' },
+        },
+      };
+    }
+
     const rows = await this.dataSource.query(
       `SELECT tu.*, t.slug as tenant_slug, t.name as tenant_name
        FROM tenant_users tu JOIN tenants t ON tu.tenant_id = t.id

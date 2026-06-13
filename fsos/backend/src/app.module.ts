@@ -23,6 +23,8 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { TenantModule } from './modules/tenant/tenant.module';
 import { ApiKeysModule } from './modules/api-keys/api-keys.module';
 
+const redisEnabled = !!config.redis.host && config.redis.host !== 'localhost';
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -33,15 +35,22 @@ import { ApiKeysModule } from './modules/api-keys/api-keys.module';
       synchronize: false,
       logging: !config.isProd,
       ssl: { rejectUnauthorized: false },
-      extra: { pgbouncer: true },
+      extra: { connectTimeoutMS: 5000 },
     }),
-    BullModule.forRoot({
-      connection: {
-        host: config.redis.host,
-        port: config.redis.port,
-        password: config.redis.password,
-      },
-    }),
+    redisEnabled
+      ? BullModule.forRoot({
+          connection: {
+            host: config.redis.host,
+            port: config.redis.port,
+            password: config.redis.password,
+          },
+        })
+      : BullModule.forRoot({
+          connection: {
+            host: 'localhost',
+            port: 6379,
+          },
+        }),
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([{
       ttl: config.rateLimit.ttl * 1000,

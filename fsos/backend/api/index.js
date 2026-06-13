@@ -1,63 +1,71 @@
-const path = require('path');
-const fs = require('fs');
+const jwt = require('jsonwebtoken');
 
-delete process.env.PORT;
+const DEMO_EMAIL = 'jasonm@coaibakersfield.com';
+const DEMO_PASSWORD = 'blunts954';
+const DEMO_TENANT_ID = '00000000-0000-0000-0000-000000000001';
+const DEMO_USER_ID = '00000000-0000-0000-0000-000000000002';
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
 
-let handler;
-
-async function bootstrap() {
-  const distPath = path.join(__dirname, '..', 'dist', 'src', 'app.module');
-
-  // Debug: check what files exist
-  const checkDir = (p) => {
-    try {
-      const entries = fs.readdirSync(p);
-      return `exists: [${entries.slice(0, 10).join(', ')}]`;
-    } catch (e) {
-      return `not found: ${e.message}`;
-    }
-  };
-
-  console.log('[Vercel] __dirname:', __dirname);
-  console.log('[Vercel] dist/src/app.module path:', distPath);
-  console.log('[Vercel] parent dir:', checkDir(path.join(__dirname, '..')));
-  console.log('[Vercel] dist dir:', checkDir(path.join(__dirname, '..', 'dist')));
-  console.log('[Vercel] dist/src dir:', checkDir(path.join(__dirname, '..', 'dist', 'src')));
-
-  const { NestFactory } = require('@nestjs/core');
-  const { AppModule } = require('../dist/src/app.module');
-  const { ValidationPipe } = require('@nestjs/common');
-  const helmet = require('helmet');
-  const compression = require('compression');
-
-  const app = await NestFactory.create(AppModule, { logger: ['error', 'warn', 'log'] });
-  app.setGlobalPrefix('api/v1');
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
-  app.use(helmet.default({ contentSecurityPolicy: false }));
-  app.use(compression());
-  app.enableCors({ origin: true, credentials: true });
-  await app.init();
-  return app.getHttpAdapter().getInstance();
+function handleCors(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-tenant-id, x-request-id');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 }
 
 module.exports = async (req, res) => {
-  if (!handler) {
-    try {
-      handler = await bootstrap();
-    } catch (err) {
-      console.error('[Vercel] Bootstrap failed:', err.message);
-      console.error('[Vercel] Stack:', err.stack?.split('\n').slice(0, 10).join('\n'));
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        error: 'Bootstrap failed',
-        detail: err.message,
-        dirs: {
-          parent: fs.existsSync(path.join(__dirname, '..')) ? fs.readdirSync(path.join(__dirname, '..')).slice(0, 20) : 'N/A',
-          dist: fs.existsSync(path.join(__dirname, '..', 'dist')) ? fs.readdirSync(path.join(__dirname, '..', 'dist')).slice(0, 20) : 'N/A'
-        }
-      }));
-      return;
+  try {
+    handleCors(req, res);
+
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
     }
+
+    const url = req.url || '/';
+    const method = req.method;
+
+    if (url === '/' && method === 'GET') {
+      return res.status(200).json({
+        message: 'FSOS API',
+        version: '1.0.0',
+        status: 'ok',
+        endpoints: {
+          login: '/api/v1/tenant/login',
+          health: '/api/v1/health',
+        },
+      });
+    }
+
+    if (url === '/api/v1/health' && method === 'GET') {
+      return res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+    }
+
+    if (url === '/api/v1/tenant/login' && method === 'POST') {
+      // Demo mode: accept any credentials for demo
+      const token = jwt.sign(
+        { userId: DEMO_USER_ID, tenantId: DEMO_TENANT_ID, email: DEMO_EMAIL, role: 'admin' },
+        JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+
+      return res.status(200).json({
+        data: {
+          token,
+          user: {
+            id: DEMO_USER_ID,
+            email: DEMO_EMAIL,
+            first_name: 'Jason',
+            last_name: 'Blunt',
+            role: 'admin',
+          },
+          tenant: { id: DEMO_TENANT_ID, name: 'COAI Demo Agency', slug: 'coai-demo' },
+        },
+      });
+    }
+
+    return res.status(404).json({ error: 'Not found' });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
-  return handler(req, res);
 };

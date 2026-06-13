@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://fsos-backend.vercel.app/api/v1';
 
 class ApiError extends Error {
   constructor(public status: number, public body: any) {
