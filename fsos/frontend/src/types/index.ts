@@ -81,6 +81,7 @@ export interface XDateTracker {
   last_name?: string;
   line_of_business?: string;
   carrier_name?: string;
+  premium_amount?: number;
 }
 
 export interface WorkflowTemplate {
@@ -146,6 +147,8 @@ export interface DashboardMetrics {
   monthly_premium: number;
   annual_premium_total: number;
   upcoming_appointments: number;
+  conversion_rate?: number;
+  avg_policy_size?: number;
 }
 
 export interface PaginatedResponse<T> {

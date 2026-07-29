@@ -17,15 +17,16 @@ export default function WorkflowsPage() {
   }, []);
 
   return (
-    <div className="page-container">
+    <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Workflows</h1>
-          <p className="text-sm text-gray-500 mt-1">DAG-based automation engine</p>
+          <h1>Workflows</h1>
+          <p>DAG-based automation engine</p>
         </div>
         <button className="btn-primary">+ Create Workflow</button>
       </div>
 
+      <div className="px-6 pb-6">
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading ? [...Array(3)].map((_, i) => (
           <div key={i} className="card p-6 animate-pulse"><div className="h-32 bg-gray-100 rounded-lg" /></div>
@@ -39,7 +40,7 @@ export default function WorkflowsPage() {
         ) : templates.map((t) => (
           <div key={t.id} className="card-hover p-5">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-fsos-400 to-brand-500 flex items-center justify-center text-white">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br bg-aethelos-primary flex items-center justify-center text-white">
                 ⚡
               </div>
               <span className={cn('badge', t.is_active ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-500')}>
@@ -56,6 +57,7 @@ export default function WorkflowsPage() {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 }

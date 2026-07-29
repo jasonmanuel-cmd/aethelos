@@ -32,15 +32,16 @@ export default function AnalyticsPage() {
   const metrics = dashboard?.metrics || {};
 
   return (
-    <div className="page-container">
+    <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Analytics</h1>
-          <p className="text-sm text-gray-500 mt-1">Agency performance overview</p>
+          <h1>Analytics</h1>
+          <p>Agency performance overview</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="px-6 pb-6 space-y-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="stat-card">
           <p className="text-xs text-gray-500 mb-1">Annual Premium Total</p>
           <p className="text-2xl font-bold text-gray-900">{formatCurrency(Number(metrics.annual_premium_total) || 0)}</p>
@@ -59,7 +60,7 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid lg:grid-cols-2 gap-6">
         {forecast && (
           <div className="card p-5">
             <h3 className="font-semibold text-gray-900 mb-4">Revenue Forecast</h3>
@@ -68,9 +69,9 @@ export default function AnalyticsPage() {
                 <span className="text-sm text-emerald-800">Locked Revenue</span>
                 <span className="text-lg font-bold text-emerald-700">{formatCurrency(Number(forecast.locked_revenue) || 0, 0)}</span>
               </div>
-              <div className="flex items-center justify-between p-3 bg-fsos-50 rounded-lg">
-                <span className="text-sm text-fsos-800">Pipeline Weighted</span>
-                <span className="text-lg font-bold text-fsos-700">{formatCurrency(Number(forecast.pipeline_weighted) || 0, 0)}</span>
+              <div className="flex items-center justify-between p-3 bg-aethelos-primary/8 rounded-lg">
+                <span className="text-sm text-aethelos-primary">Pipeline Weighted</span>
+                <span className="text-lg font-bold text-aethelos-primary">{formatCurrency(Number(forecast.pipeline_weighted) || 0, 0)}</span>
               </div>
               <div className="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
                 <span className="text-sm text-amber-800">Renewals Next 90 Days</span>
@@ -133,6 +134,7 @@ export default function AnalyticsPage() {
           </table>
         </div>
       </div>
+    </div>
     </div>
   );
 }

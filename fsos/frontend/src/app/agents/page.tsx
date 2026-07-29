@@ -26,14 +26,15 @@ export default function AgentsPage() {
   }, []);
 
   return (
-    <div className="page-container">
+    <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">AI Agents</h1>
-          <p className="text-sm text-gray-500 mt-1">Autonomous digital employees</p>
+          <h1>AI Agents</h1>
+          <p>Autonomous digital employees</p>
         </div>
       </div>
 
+      <div className="px-6 pb-6">
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading ? [...Array(5)].map((_, i) => (
           <div key={i} className="card p-6 animate-pulse"><div className="h-28 bg-gray-100 rounded-lg" /></div>
@@ -47,7 +48,7 @@ export default function AgentsPage() {
           <div key={agent.id} className="card-hover p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-fsos-400 to-brand-500 flex items-center justify-center text-2xl">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br bg-aethelos-primary flex items-center justify-center text-2xl">
                   {AGENT_ICONS[agent.agent_type] || '🤖'}
                 </div>
                 <div>
@@ -74,6 +75,7 @@ export default function AgentsPage() {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 }

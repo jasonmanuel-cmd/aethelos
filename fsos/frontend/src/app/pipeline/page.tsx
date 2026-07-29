@@ -28,18 +28,19 @@ export default function PipelinePage() {
   const totalWeighted = stages.reduce((sum: number, s: any) => sum + Number(s.weighted_value), 0);
 
   return (
-    <div className="page-container">
+    <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Pipeline</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1>Pipeline</h1>
+          <p>
             Pipeline: {formatCurrency(totalPipelineValue)} · Weighted: {formatCurrency(totalWeighted)}
           </p>
         </div>
         <button className="btn-primary">+ Add Deal</button>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-6">
+      <div className="px-6 pb-6 space-y-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
         {stages.map((stage: any) => (
           <div key={stage.id} className="card p-4 text-center">
             <div className="w-3 h-3 rounded-full mx-auto mb-2" style={{ backgroundColor: stage.color }} />
@@ -81,6 +82,7 @@ export default function PipelinePage() {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 }

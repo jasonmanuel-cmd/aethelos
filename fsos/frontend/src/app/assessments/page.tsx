@@ -131,7 +131,14 @@ export default function AssessmentsPage() {
 
   if (result) {
     return (
-      <div className="page-container max-w-3xl">
+      <div>
+        <div className="page-header">
+          <div>
+            <h1>Financial Health Assessment</h1>
+            <p>Assessment results</p>
+          </div>
+        </div>
+        <div className="px-6 pb-6 max-w-3xl">
         <div className="card p-8 text-center">
           <div className={cn('inline-flex items-center gap-2 px-4 py-2 rounded-full text-lg font-bold mb-4', riskColor(result.risk_level))}>
             Score: {result.overall_score}/100 — {result.risk_level}
@@ -149,11 +156,11 @@ export default function AssessmentsPage() {
           <div className="text-left space-y-3 mb-6">
             <h3 className="font-semibold text-gray-900">Recommendations</h3>
             {result.recommendations.map((r, i) => (
-              <div key={i} className="flex items-start gap-3 p-3 bg-fsos-50 rounded-lg">
-                <span className="w-6 h-6 rounded-full bg-fsos-600 text-white text-xs flex items-center justify-center font-bold shrink-0">{r.priority}</span>
+              <div key={i} className="flex items-start gap-3 p-3 bg-aethelos-primary/8 rounded-lg">
+                <span className="w-6 h-6 rounded-full bg-aethelos-primary text-white text-xs flex items-center justify-center font-bold shrink-0">{r.priority}</span>
                 <div>
-                  <p className="text-sm font-medium text-fsos-900">{r.category}</p>
-                  <p className="text-sm text-fsos-700">{r.recommendation}</p>
+                  <p className="text-sm font-medium text-aethelos-text">{r.category}</p>
+                  <p className="text-sm text-aethelos-primary">{r.recommendation}</p>
                 </div>
               </div>
             ))}
@@ -162,18 +169,20 @@ export default function AssessmentsPage() {
           <button onClick={reset} className="btn-primary">New Assessment</button>
         </div>
       </div>
+      </div>
     );
   }
 
   return (
-    <div className="page-container max-w-3xl">
+    <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Financial Health Assessment</h1>
-          <p className="text-sm text-gray-500 mt-1">AI-powered financial vulnerability analysis</p>
+          <h1>Financial Health Assessment</h1>
+          <p>AI-powered financial vulnerability analysis</p>
         </div>
       </div>
 
+      <div className="px-6 pb-6 max-w-3xl">
       {!started ? (
         <div className="card p-8 text-center">
           <div className="text-5xl mb-4">📋</div>
@@ -199,7 +208,7 @@ export default function AssessmentsPage() {
             </div>
             <div className="flex gap-1">
               {sections.map((_, i) => (
-                <div key={i} className={cn('w-8 h-1.5 rounded-full', i <= step ? 'bg-fsos-500' : 'bg-gray-200')} />
+                <div key={i} className={cn('w-8 h-1.5 rounded-full', i <= step ? 'bg-aethelos-primary/80' : 'bg-gray-200')} />
               ))}
             </div>
           </div>
@@ -212,12 +221,12 @@ export default function AssessmentsPage() {
                   <div className="flex gap-3">
                     <button onClick={() => handleResponse(field.key, true)}
                       className={cn('px-4 py-2 rounded-lg border text-sm font-medium transition-all',
-                        responses[field.key] === true ? 'bg-fsos-50 border-fsos-500 text-fsos-700' : 'border-gray-200 text-gray-600 hover:border-gray-300')}>
+                        responses[field.key] === true ? 'bg-aethelos-primary/8 border-aethelos-primary text-aethelos-primary' : 'border-gray-200 text-gray-600 hover:border-gray-300')}>
                       Yes
                     </button>
                     <button onClick={() => handleResponse(field.key, false)}
                       className={cn('px-4 py-2 rounded-lg border text-sm font-medium transition-all',
-                        responses[field.key] === false ? 'bg-fsos-50 border-fsos-500 text-fsos-700' : 'border-gray-200 text-gray-600 hover:border-gray-300')}>
+                        responses[field.key] === false ? 'bg-aethelos-primary/8 border-aethelos-primary text-aethelos-primary' : 'border-gray-200 text-gray-600 hover:border-gray-300')}>
                       No
                     </button>
                   </div>
@@ -248,6 +257,7 @@ export default function AssessmentsPage() {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

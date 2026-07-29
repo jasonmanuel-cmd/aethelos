@@ -10,6 +10,7 @@ export default function ClientsPage() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Contact | null>(null);
   const [policies, setPolicies] = useState<Policy[]>([]);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     apiClient.get<PaginatedResponse<Contact>>('/contacts?status=Active Client&limit=100')
@@ -17,6 +18,14 @@ export default function ClientsPage() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  const filtered = clients.filter((c) => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return `${c.first_name} ${c.last_name}`.toLowerCase().includes(q)
+      || (c.email || '').toLowerCase().includes(q)
+      || (c.phone || '').toLowerCase().includes(q);
+  });
 
   const loadClientDetails = async (c: Contact) => {
     setSelected(c);
@@ -27,34 +36,34 @@ export default function ClientsPage() {
   };
 
   return (
-    <div className="page-container">
+    <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Clients</h1>
-          <p className="text-sm text-gray-500 mt-1">{clients.length} active clients</p>
+          <h1>Clients</h1>
+          <p>{filtered.length} of {clients.length} active clients</p>
         </div>
         <div className="flex gap-2">
-          <input type="text" placeholder="Search clients..." className="input-field w-64" />
-          <button className="btn-primary">Search</button>
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search clients..." className="input-field w-48" />
         </div>
       </div>
 
+      <div className="px-6 pb-6">
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <div className="card overflow-hidden">
             <div className="divide-y divide-gray-100">
               {loading ? [...Array(5)].map((_, i) => (
                 <div key={i} className="p-4 animate-pulse"><div className="h-10 bg-gray-100 rounded-lg" /></div>
-              )) : clients.length === 0 ? (
-                <p className="p-8 text-center text-sm text-gray-400">No active clients yet</p>
-              ) : clients.map((c) => (
+              )) : filtered.length === 0 ? (
+                <p className="p-8 text-center text-sm text-gray-400">{search ? 'No clients match your search' : 'No active clients yet'}</p>
+              ) : filtered.map((c) => (
                 <div key={c.id}
                   className={cn('p-4 flex items-center justify-between hover:bg-gray-50 cursor-pointer transition-colors',
-                    selected?.id === c.id && 'bg-fsos-50')}
+                    selected?.id === c.id && 'bg-aethelos-primary/8')}
                   onClick={() => loadClientDetails(c)}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center text-white font-bold">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br bg-aethelos-secondary flex items-center justify-center text-white font-bold">
                       {c.first_name?.[0]}{c.last_name?.[0]}
                     </div>
                     <div>
@@ -76,7 +85,7 @@ export default function ClientsPage() {
           {selected ? (
             <div className="card p-5 space-y-4">
               <div className="text-center pb-4 border-b border-gray-100">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center text-white font-bold text-xl mx-auto mb-2">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br bg-aethelos-secondary flex items-center justify-center text-white font-bold text-xl mx-auto mb-2">
                   {selected.first_name?.[0]}{selected.last_name?.[0]}
                 </div>
                 <h3 className="font-bold text-gray-900">{selected.first_name} {selected.last_name}</h3>
@@ -117,6 +126,7 @@ export default function ClientsPage() {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 }

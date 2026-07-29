@@ -1,300 +1,221 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
+
+function Section({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 24 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 export default function LandingPage() {
+  const [showDoor, setShowDoor] = useState(true);
+  const [doorOpen, setDoorOpen] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDoorOpen(true), 1200);
+    const hide = setTimeout(() => setShowDoor(false), 2200);
+    return () => { clearTimeout(timer); clearTimeout(hide); };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-        <div className="text-center space-y-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-              <span className="text-sm font-medium text-blue-700">Live on Vercel</span>
-            </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-stone-900 tracking-tight leading-tight">
-              Financial Services
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
-                Operating System
-              </span>
-            </h1>
-            <p className="text-lg sm:text-xl text-stone-600 max-w-3xl mx-auto leading-relaxed">
-              AI-native platform to track leads, automate outreach, manage policies, and grow your book of business.
-              Built for financial professionals who demand world-class tools.
-            </p>
-          </div>
+    <div className="relative min-h-screen bg-aethelos-bg overflow-hidden">
+      {/* Warm ambient gradient */}
+      <div className="fixed top-[-20%] left-[-10%] w-[60%] h-[60%] bg-gradient-to-br from-aethelos-primary/4 to-aethelos-secondary/4 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="fixed bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-gradient-to-tr from-aethelos-accent/3 to-aethelos-secondary/3 rounded-full blur-[120px] pointer-events-none z-0" />
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/login">
-              <Button size="xl" className="w-full sm:w-auto">
-                Start Free Trial
-              </Button>
-            </Link>
-            <Button variant="outline" size="xl" className="w-full sm:w-auto">
-              View Demo
-            </Button>
-          </div>
-
-          <div className="pt-8">
-            <p className="text-sm text-stone-500 mb-4">Integrated with</p>
-            <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-              <div className="text-xs font-semibold text-stone-400">VERCEL</div>
-              <div className="text-xs font-semibold text-stone-400">Next.js</div>
-              <div className="text-xs font-semibold text-stone-400">TypeScript</div>
-              <div className="text-xs font-semibold text-stone-400">Tailwind</div>
+      {/* Door-opening logo animation */}
+      <AnimatePresence>
+        {showDoor && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-aethelos-bg"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="perspective-[1200px]">
+              <motion.div
+                className="relative w-[280px] h-[280px] md:w-[360px] md:h-[360px]"
+                style={{ transformOrigin: 'center center', transformStyle: 'preserve-3d' }}
+                initial={{ rotateY: 0, scale: 1, opacity: 1 }}
+                animate={doorOpen ? {
+                  rotateY: -110,
+                  scale: 0.3,
+                  opacity: 0,
+                } : {}}
+                transition={{ duration: 0.8, ease: [0.65, 0, 0.35, 1] }}
+              >
+                <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+                  <Image
+                    src="/logo.png"
+                    alt="AethelOS"
+                    fill
+                    className="object-contain p-4"
+                    priority
+                  />
+                </div>
+                {/* Door swing shadow */}
+                <motion.div
+                  className="absolute inset-0 rounded-3xl bg-black/40"
+                  initial={{ opacity: 0 }}
+                  animate={doorOpen ? { opacity: 1 } : { opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                />
+              </motion.div>
             </div>
+            {/* Subtle loading text */}
+            <motion.p
+              className="absolute bottom-12 text-xs text-aethelos-muted tracking-widest uppercase"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              Chaotically Organized AI
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Nav */}
+      <motion.nav
+        className="relative z-10 flex items-center justify-between px-6 py-5 max-w-6xl mx-auto"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 2.2, duration: 0.4 }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="relative w-9 h-9">
+            <Image src="/logo.png" alt="AethelOS" fill className="object-contain" />
           </div>
+          <span className="font-display text-lg font-bold text-aethelos-text">Aethel<span className="text-aethelos-primary">OS</span></span>
         </div>
-      </div>
+        <div className="hidden md:flex items-center gap-8 text-sm text-aethelos-text-secondary">
+          <a href="#features" className="hover:text-aethelos-primary transition-colors">Features</a>
+          <a href="#about" className="hover:text-aethelos-primary transition-colors">About</a>
+          <Link href="/login" className="px-5 py-2.5 rounded-xl bg-aethelos-primary text-white text-sm font-medium hover:bg-aethelos-primary-light transition-all shadow-sm hover:shadow-md">Sign In</Link>
+        </div>
+      </motion.nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-        <div className="text-center space-y-4 mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-stone-900">Everything You Need</h2>
-          <p className="text-lg text-stone-600 max-w-2xl mx-auto">
-            Comprehensive tools to manage your financial services business end-to-end.
+      {/* Hero */}
+      <section className="relative z-10 flex flex-col items-center justify-center text-center px-6 pt-24 pb-32">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2.3, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-aethelos-border text-xs text-aethelos-text-secondary mb-8 shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-aethelos-accent" />
+            Financial Services Operating System
+          </div>
+          <h1 className="font-display text-5xl md:text-7xl font-bold leading-tight mb-5">
+            <span className="text-aethelos-text">The platform for</span><br />
+            <span className="text-gradient">Modern Insurance Agencies</span>
+          </h1>
+          <p className="text-aethelos-text-secondary text-lg max-w-xl mx-auto mb-10 leading-relaxed">
+            AI-powered lead qualification, automated appointment setting, pipeline management,
+            and client retention — crafted for <span className="text-aethelos-primary font-medium">financial professionals</span>.
           </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="group hover:shadow-lg transition-all duration-300">
-            <CardHeader>
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
-                <span className="text-2xl">💰</span>
-              </div>
-              <CardTitle>Lead Management</CardTitle>
-              <CardDescription>
-                AI-powered lead qualification and tracking system to never miss a prospect.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Badge variant="primary" size="sm">AI Integration</Badge>
-                <Badge variant="secondary" size="sm">Smart Routing</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="group hover:shadow-lg transition-all duration-300">
-            <CardHeader>
-              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-indigo-200 transition-colors">
-                <span className="text-2xl">📅</span>
-              </div>
-              <CardTitle>Scheduling System</CardTitle>
-              <CardDescription>
-                Automated appointment scheduling with AI-powered calendar integration.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Badge variant="primary" size="sm">AI Optimization</Badge>
-                <Badge variant="secondary" size="sm">Real-time Sync</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="group hover:shadow-lg transition-all duration-300">
-            <CardHeader>
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-purple-200 transition-colors">
-                <span className="text-2xl">📊</span>
-              </div>
-              <CardTitle>Pipeline Analytics</CardTitle>
-              <CardDescription>
-                Real-time pipeline visualization and conversion analytics.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Badge variant="primary" size="sm">Live Data</Badge>
-                <Badge variant="secondary" size="sm">Custom Reports</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="group hover:shadow-lg transition-all duration-300">
-            <CardHeader>
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors">
-                <span className="text-2xl">⚡</span>
-              </div>
-              <CardTitle>Automated Workflows</CardTitle>
-              <CardDescription>
-                No-code automation builder for repetitive tasks and processes.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Badge variant="primary" size="sm">Drag & Drop</Badge>
-                <Badge variant="secondary" size="sm">Quick Setup</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="group hover:shadow-lg transition-all duration-300">
-            <CardHeader>
-              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-200 transition-colors">
-                <span className="text-2xl">🤖</span>
-              </div>
-              <CardTitle>AI Agents</CardTitle>
-              <CardDescription>
-                Custom AI agents for lead scoring, follow-ups, and customer engagement.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Badge variant="primary" size="sm">Smart Routing</Badge>
-                <Badge variant="secondary" size="sm">Continuous Learning</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="group hover:shadow-lg transition-all duration-300">
-            <CardHeader>
-              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
-                <span className="text-2xl">📈</span>
-              </div>
-              <CardTitle>Analytics Dashboard</CardTitle>
-              <CardDescription>
-                Real-time analytics and KPI tracking for your business.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Badge variant="primary" size="sm">Live Metrics</Badge>
-                <Badge variant="secondary" size="sm">Custom Views</Badge>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <h2 className="text-3xl sm:text-4xl font-bold text-stone-900">Seamless Integration</h2>
-              <p className="text-lg text-stone-600">
-                Connect your existing tools and workflows with our universal API.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-start gap-4">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-lg">🔗</span>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-stone-900 mb-1">Universal API</h3>
-                  <p className="text-sm text-stone-600">Connect to any system with our RESTful API and webhooks.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-lg">🔄</span>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-stone-900 mb-1">Real-time Sync</h3>
-                  <p className="text-sm text-stone-600">Instant data synchronization across all your devices and platforms.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-lg">🔒</span>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-stone-900 mb-1">Enterprise Security</h3>
-                  <p className="text-sm text-stone-900">Bank-grade security with JWT authentication and role-based access control.</p>
-                </div>
-              </div>
-            </div>
+          <div className="flex items-center justify-center gap-4">
+            <Link href="/login" className="px-8 py-3 rounded-xl bg-aethelos-primary text-white font-medium hover:bg-aethelos-primary-light transition-all shadow-sm hover:shadow-md">Get Started</Link>
+            <a href="#features" className="px-8 py-3 rounded-xl border border-aethelos-border text-aethelos-text bg-white hover:bg-aethelos-card transition-all">Explore Features</a>
           </div>
+        </motion.div>
+      </section>
 
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl transform rotate-3" />
-            <div className="relative bg-white rounded-3xl shadow-2xl p-8 border border-stone-200">
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-stone-900">Connection Status</span>
-                    <Badge variant="success" size="sm">Active</Badge>
-                  </div>
-                  <div className="w-full bg-stone-200 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 h-2 rounded-full w-[85%]" />
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-stone-100 rounded-full flex items-center justify-center">
-                      <span className="text-lg">🤖</span>
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-stone-900">AI Agent</div>
-                      <div className="text-xs text-stone-500">Lead qualification active</div>
-                    </div>
-                    <Badge variant="primary" size="sm">Online</Badge>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-stone-100 rounded-full flex items-center justify-center">
-                      <span className="text-lg">📊</span>
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-stone-900">Pipeline</div>
-                      <div className="text-xs text-stone-500">85% conversion rate</div>
-                    </div>
-                    <Badge variant="success" size="sm">Excellent</Badge>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-stone-200">
-                  <div className="text-xs text-stone-500 mb-2">System Health</div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-green-600">99.9%</div>
-                      <div className="text-xs text-stone-500">Uptime</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-blue-600">500ms</div>
-                      <div className="text-xs text-stone-500">Latency</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-purple-600">24/7</div>
-                      <div className="text-xs text-stone-500">Support</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* Trust badges */}
+      <Section className="relative z-10 pb-20">
+        <p className="text-center text-xs text-aethelos-muted uppercase tracking-widest mb-8">Trusted by leading agencies nationwide</p>
+        <div className="flex flex-wrap items-center justify-center gap-12 opacity-60">
+          {['Progressive', 'Travelers', 'Nationwide', 'Prudential', 'MetLife', 'State Farm'].map((name) => (
+            <div key={name} className="font-display text-lg font-bold text-aethelos-text-secondary/70">{name}</div>
+          ))}
         </div>
-      </div>
+      </Section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-8 sm:p-12 lg:p-16 text-white">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl sm:text-4xl font-bold">Ready to Transform Your Business?</h2>
-              <p className="text-lg text-blue-100">
-                Join thousands of financial professionals using FSOS to automate their operations and focus on growth.
-              </p>
-            </div>
+      {/* Features */}
+      <section id="features" className="relative z-10 px-6 py-24 max-w-6xl mx-auto">
+        <Section className="text-center mb-16">
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-aethelos-text">
+            Everything you need to <span className="text-gradient">grow your agency</span>
+          </h2>
+          <p className="text-aethelos-text-secondary max-w-lg mx-auto">Intelligent tools that handle the busywork while you focus on your clients.</p>
+        </Section>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="xl" className="bg-white text-blue-600 hover:bg-blue-50 w-full sm:w-auto">
-                Start Your Free Trial
-              </Button>
-              <Button variant="outline" size="xl" className="border-white text-white hover:bg-white/10 w-full sm:w-auto">
-                Schedule Demo
-              </Button>
-            </div>
-          </div>
+        <div className="grid md:grid-cols-3 gap-5">
+          {[
+            { title: 'AI Lead Qualifier', desc: 'Qualifies inbound leads 24/7 via SMS and email. Only warm leads hit your calendar — no more cold call roulette.', icon: '🎯' },
+            { title: 'Smart Pipeline', desc: 'Visual deal tracking with automated stage progression and probability scoring. Know exactly where every opportunity stands.', icon: '📊' },
+            { title: 'X-Date Automation', desc: '60-day renewal campaigns with SMS, email, and call sequences. Automatically re-engage clients before their policies expire.', icon: '🔄' },
+            { title: 'Appointment AI', desc: 'Books meetings automatically. No back-and-forth scheduling. Clients pick from your available slots — 78% show rate.', icon: '📅' },
+            { title: 'Cross-Sell Engine', desc: 'Detects life events and policy gaps, triggering tailored coverage suggestions. Turn existing clients into multi-policy households.', icon: '⚡' },
+            { title: 'Retention Guardian', desc: 'Monitors at-risk clients and deploys save campaigns before they lapse. Reduce churn and protect your book of business.', icon: '🛡️' },
+          ].map((f, i) => (
+            <motion.div
+              key={f.title}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08, duration: 0.4 }}
+              className="card p-6 hover:shadow-card-hover group cursor-default"
+            >
+              <div className="text-2xl mb-4">{f.icon}</div>
+              <h3 className="font-display font-bold text-lg mb-2 text-aethelos-text group-hover:text-aethelos-primary transition-colors">{f.title}</h3>
+              <p className="text-aethelos-text-secondary text-sm leading-relaxed">{f.desc}</p>
+            </motion.div>
+          ))}
         </div>
-      </div>
+      </section>
+
+      {/* Stats */}
+      <section className="relative z-10 px-6 py-20">
+        <div className="max-w-4xl mx-auto grid md:grid-cols-4 gap-8 text-center">
+          {[
+            { value: '47%', label: 'Faster Close Rate', desc: 'AI qualification saves 10+ hours/week per agent' },
+            { value: '3.2x', label: 'More Appointments', desc: 'Automated scheduling fills your calendar' },
+            { value: '89%', label: 'Client Retention', desc: 'Proactive save campaigns reduce lapses' },
+            { value: '12 hrs', label: 'Saved Per Week', desc: 'Back to what matters — your clients' },
+          ].map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08 }}
+              className="card p-6"
+            >
+              <div className="font-display text-3xl font-bold text-aethelos-primary mb-1">{s.value}</div>
+              <div className="font-medium text-aethelos-text text-sm mb-1">{s.label}</div>
+              <div className="text-aethelos-muted text-xs">{s.desc}</div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <Section className="relative z-10 px-6 py-24 text-center">
+        <div className="max-w-lg mx-auto card p-10">
+          <h2 className="font-display text-3xl font-bold mb-3 text-aethelos-text">Ready to get started?</h2>
+          <p className="text-aethelos-text-secondary mb-8">Sign in to your agency dashboard and see how AethelOS transforms your workflow.</p>
+          <Link href="/login" className="inline-block px-10 py-3 rounded-xl bg-aethelos-primary text-white font-medium hover:bg-aethelos-primary-light transition-all shadow-sm hover:shadow-md">Go to Dashboard</Link>
+        </div>
+      </Section>
+
+      {/* Footer */}
+      <footer className="relative z-10 border-t border-aethelos-border py-8 text-center text-aethelos-muted text-xs">
+        AethelOS &copy; 2026 — Chaotically Organized AI
+      </footer>
     </div>
   );
 }

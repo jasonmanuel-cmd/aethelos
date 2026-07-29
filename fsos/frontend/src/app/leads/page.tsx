@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
 import { formatDate, statusColor, cn } from '@/lib/utils';
+import { SkeletonTable } from '@/components/ui/Skeleton';
 import type { Contact, PaginatedResponse } from '@/types';
 
 export default function LeadsPage() {
@@ -38,18 +39,19 @@ export default function LeadsPage() {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="page-container">
+    <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Leads & Contacts</h1>
-          <p className="text-sm text-gray-500 mt-1">{total} total contacts</p>
+          <h1>Leads & Contacts</h1>
+          <p>{total} total contacts</p>
         </div>
         <button className="btn-primary" onClick={() => alert('New lead form coming soon')}>
           + Add Contact
         </button>
       </div>
 
-      <div className="card mb-6">
+      <div className="px-6 pb-6 space-y-6">
+      <div className="card">
         <div className="p-4 flex flex-col sm:flex-row gap-4">
           <form onSubmit={handleSearch} className="flex-1 flex gap-2">
             <input
@@ -98,7 +100,7 @@ export default function LeadsPage() {
                 <tr key={c.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedContact(c)}>
                   <td className="table-cell">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-fsos-400 to-brand-500 flex items-center justify-center text-white font-bold text-xs">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br bg-aethelos-primary flex items-center justify-center text-white font-bold text-xs">
                         {c.first_name?.charAt(0)}{c.last_name?.charAt(0)}
                       </div>
                       <div>
@@ -146,7 +148,7 @@ export default function LeadsPage() {
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="p-6 border-b border-gray-100 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-fsos-400 to-brand-500 flex items-center justify-center text-white font-bold text-lg">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br bg-aethelos-primary flex items-center justify-center text-white font-bold text-lg">
                   {selectedContact.first_name?.charAt(0)}{selectedContact.last_name?.charAt(0)}
                 </div>
                 <div>
@@ -173,6 +175,7 @@ export default function LeadsPage() {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }
